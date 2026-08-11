@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第11章 ログイン・権限制御 — CakePHP 0から実務まで</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body data-chapter="11">
+  <div id="site-nav" class="site-nav" aria-label="サイトナビ"></div>
+  <div class="app">
+    <aside class="sidebar" aria-label="目次">
+      <a class="brand" href="../index.html">
+        <div class="brand-title">CakePHP 0から実務まで</div>
+        <div class="brand-sub">たまたまに · 初心者向け全14章</div>
+      </a>
+      <nav id="sidebar-nav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <main class="main">
+      <div class="topbar">
+        <button type="button" class="menu-btn" id="menu-btn" aria-label="メニュー">メニュー</button>
+        <span>第11章</span>
+      </div>
+      <div class="content">
+        <header class="chapter-head">
+          <div class="eyebrow">第11章 · 初心者向け</div>
+          <h1>ログイン・権限制御</h1>
+          <p class="lead">「誰か」と「何をしてよいか」は別問題です。順番に押さえます。</p>
+        </header>
+        
+<section class="lesson" id="authz">
+  <h2>1. 認証と認可の違い</h2>
+  <div class="callout"><code>認証</code>＝あなたは誰？　／　<code>認可</code>＝それしていい？</div>
+  <div class="analogy">
+    <span class="analogy-label">たとえ</span>
+    <p>社員証で入場＝認証。会議室を予約できる権限＝認可。</p>
+  </div>
+</section>
+
+<section class="lesson" id="user">
+  <h2>2. ログインユーザーとは</h2>
+  <p>今サイトを使っている、ログイン済みの人です。Sessionなどに情報が入っています。</p>
+</section>
+
+<section class="lesson" id="get-user">
+  <h2>3. ログインユーザー情報の取得</h2>
+<pre data-lang="php"><code>$user = $this->request->getSession()->read('Auth.User');
+$userId = $user['id'] ?? null;</code></pre>
+</section>
+
+<section class="lesson" id="guest">
+  <h2>4. 未ログイン判定</h2>
+<pre data-lang="php"><code>if (!$this->request->getSession()->check('Auth.User.id')) {
+    $this->Flash->error('ログインしてください');
+    return $this->redirect(['controller' => 'Users', 'action' => 'login']);
+}</code></pre>
+</section>
+
+<section class="lesson" id="permission">
+  <h2>5. 権限とは</h2>
+  <div class="callout">「その操作をしてよいか」のルール</div>
+  <p>例: 一般は自分のTODOだけ。管理者は全部。</p>
+</section>
+
+<section class="lesson" id="roles">
+  <h2>6. 一般ユーザー / 管理者</h2>
+<pre data-lang="php"><code>$role = $this->request->getSession()->read('Auth.User.role');
+if ($role !== 'admin') {
+    // 管理者専用ページならここで拒否
+}</code></pre>
+</section>
+
+<section class="lesson" id="own-data">
+  <h2>7. 対象データを操作できるか確認</h2>
+  <p>URLを直打ちされても守れるようにします。</p>
+<pre data-lang="php"><code>$todo = $this->Todos->get($id);
+if ($todo->user_id !== $userId && $role !== 'admin') {
+    throw new \Cake\Http\Exception\ForbiddenException('権限がありません');
+}</code></pre>
+</section>
+
+<section class="lesson" id="denied">
+  <h2>8. 権限がない場合の処理</h2>
+  <ul>
+    <li>403（禁止）を返す</li>
+    <li>Flashして一覧へ戻す</li>
+    <li>（上級）存在しないように 404 にする</li>
+  </ul>
+</section>
+
+<section class="lesson" id="exercise">
+  <h2>第11章 やってみよう</h2>
+  <div class="exercise">
+    <div class="exercise-label">EXERCISE</div>
+    <ol>
+      <li>自分のTODOだけ編集できる条件を日本語で書く</li>
+      <li>管理者例外を1行で足す</li>
+    </ol>
+  </div>
+</section>
+        <nav class="pager"><a href="ch10.html"><span class="dir">前へ</span><span class="title">第10章 Transaction</span></a><a class="next" href="ch12.html"><span class="dir">次へ</span><span class="title">第12章 ログ・エラー処理</span></a></nav>
+      </div>
+    </main>
+  </div>
+  <script src="../js/site.js"></script>
+  <script src="../js/curriculum.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

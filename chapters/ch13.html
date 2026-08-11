@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第13章 CSV出力 — CakePHP 0から実務まで</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body data-chapter="13">
+  <div id="site-nav" class="site-nav" aria-label="サイトナビ"></div>
+  <div class="app">
+    <aside class="sidebar" aria-label="目次">
+      <a class="brand" href="../index.html">
+        <div class="brand-title">CakePHP 0から実務まで</div>
+        <div class="brand-sub">たまたまに · 初心者向け全14章</div>
+      </a>
+      <nav id="sidebar-nav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <main class="main">
+      <div class="topbar">
+        <button type="button" class="menu-btn" id="menu-btn" aria-label="メニュー">メニュー</button>
+        <span>第13章</span>
+      </div>
+      <div class="content">
+        <header class="chapter-head">
+          <div class="eyebrow">第13章 · 初心者向け</div>
+          <h1>CSV出力</h1>
+          <p class="lead">表データをファイルにして渡す、業務で頻出の機能です。</p>
+        </header>
+        
+<section class="lesson" id="what-is-csv">
+  <h2>1. CSVとは</h2>
+  <div class="callout">カンマで区切ったテキスト。Excelや他システム連携でよく使う</div>
+<pre data-lang="text" data-label="CSV"><code>ID,タイトル,完了
+1,書類提出,0
+2,買い物,1</code></pre>
+</section>
+
+<section class="lesson" id="fetch">
+  <h2>2. DBから対象データ取得</h2>
+<pre data-lang="php"><code>$todos = $this->Todos->find()
+    ->where(['user_id' => $userId])
+    ->all();</code></pre>
+</section>
+
+<section class="lesson" id="transform">
+  <h2>3. CSV用にデータを加工</h2>
+  <p>1行目は見出し、2行目からデータ、が分かりやすいです。</p>
+<pre data-lang="php"><code>$rows = [];
+$rows[] = ['ID', 'タイトル', '完了'];
+foreach ($todos as $todo) {
+    $rows[] = [$todo->id, $todo->title, $todo->done ? '1' : '0'];
+}</code></pre>
+</section>
+
+<section class="lesson" id="response">
+  <h2>4. CSVレスポンス</h2>
+  <p>ブラウザに「これはダウンロード用」と伝えます。</p>
+<pre data-lang="php"><code>$this->response = $this->response->withType('csv');
+$this->response = $this->response->withDownload('todos.csv');</code></pre>
+</section>
+
+<section class="lesson" id="download">
+  <h2>5. ファイルとして出力</h2>
+<pre data-lang="php"><code>public function export()
+{
+    $todos = $this->Todos->find()->all();
+    $fh = fopen('php://temp', 'r+');
+    fputcsv($fh, ['ID', 'Title', 'Done']);
+    foreach ($todos as $todo) {
+        fputcsv($fh, [$todo->id, $todo->title, (int)$todo->done]);
+    }
+    rewind($fh);
+    $csv = stream_get_contents($fh);
+    fclose($fh);
+
+    return $this->response
+        ->withType('csv')
+        ->withDownload('todos.csv')
+        ->withStringBody($csv);
+}</code></pre>
+</section>
+
+<section class="lesson" id="encoding">
+  <h2>6. 日本語・文字コードについて</h2>
+  <div class="warn">
+    <span class="warn-label">Excelで文字化けしたら</span>
+    <p>UTF-8の先頭に BOM を付ける、または SJIS に変換する、のどれかが必要なことがあります。</p>
+  </div>
+<pre data-lang="php"><code>$csv = "\xEF\xBB\xBF" . $csv; // UTF-8 BOM の例</code></pre>
+</section>
+
+<section class="lesson" id="exercise">
+  <h2>第13章 やってみよう</h2>
+  <div class="exercise">
+    <div class="exercise-label">EXERCISE</div>
+    <ol>
+      <li>見出し＋データ行の配列を作る</li>
+      <li>ダウンロード用レスポンスの骨格を写経する</li>
+      <li>日本語タイトルで文字化けしないか確認する</li>
+    </ol>
+  </div>
+</section>
+        <nav class="pager"><a href="ch12.html"><span class="dir">前へ</span><span class="title">第12章 ログ・エラー処理</span></a><a class="next" href="ch14.html"><span class="dir">次へ</span><span class="title">第14章 TODO機能を一から作る</span></a></nav>
+      </div>
+    </main>
+  </div>
+  <script src="../js/site.js"></script>
+  <script src="../js/curriculum.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

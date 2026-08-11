@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第8章 Component — CakePHP 0から実務まで</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body data-chapter="08">
+  <div id="site-nav" class="site-nav" aria-label="サイトナビ"></div>
+  <div class="app">
+    <aside class="sidebar" aria-label="目次">
+      <a class="brand" href="../index.html">
+        <div class="brand-title">CakePHP 0から実務まで</div>
+        <div class="brand-sub">たまたまに · 初心者向け全14章</div>
+      </a>
+      <nav id="sidebar-nav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <main class="main">
+      <div class="topbar">
+        <button type="button" class="menu-btn" id="menu-btn" aria-label="メニュー">メニュー</button>
+        <span>第8章</span>
+      </div>
+      <div class="content">
+        <header class="chapter-head">
+          <div class="eyebrow">第8章 · 初心者向け</div>
+          <h1>Component</h1>
+          <p class="lead">同じ受付処理を、何度もコピペしないための部品です。</p>
+        </header>
+        
+<section class="lesson" id="what-is-component">
+  <h2>1. Componentとは</h2>
+  <div class="callout"><code>Component</code>＝Controller用の再利用パーツ</div>
+</section>
+
+<section class="lesson" id="why">
+  <h2>2. Componentを使う理由</h2>
+  <div class="analogy">
+    <span class="analogy-label">たとえ</span>
+    <p>どの窓口でも「会員証チェック」が必要なら、チェック係を1人雇って使い回します。それがComponentです。</p>
+  </div>
+</section>
+
+<section class="lesson" id="use">
+  <h2>3. ControllerからComponentを利用</h2>
+<pre data-lang="php"><code>public function initialize(): void
+{
+    parent::initialize();
+    $this->loadComponent('Flash');
+    $this->loadComponent('AuthCheck');
+}</code></pre>
+</section>
+
+<section class="lesson" id="extract">
+  <h2>4. 共通処理をComponent化</h2>
+<pre data-lang="php"><code>// ログイン必須チェックの例（イメージ）
+public function requireLogin(): void
+{
+    $controller = $this->getController();
+    $session = $controller->getRequest()->getSession();
+    if (!$session->check('Auth.User.id')) {
+        $controller->Flash->error('ログインしてください');
+        $controller->redirect(['controller' => 'Users', 'action' => 'login']);
+    }
+}</code></pre>
+  <div class="tip">
+    <span class="tip-label">始め方</span>
+    <p>まずControllerに直接書いて動かす → 同じ処理が2回出たらComponentにする、で十分です。</p>
+  </div>
+</section>
+
+<section class="lesson" id="exercise">
+  <h2>第8章 やってみよう</h2>
+  <div class="exercise">
+    <div class="exercise-label">EXERCISE</div>
+    <ol>
+      <li>ログインチェックをComponentに切り出す設計を紙に書く</li>
+      <li>2つのControllerから使う場面を想像する</li>
+    </ol>
+  </div>
+</section>
+        <nav class="pager"><a href="ch07.html"><span class="dir">前へ</span><span class="title">第7章 Session</span></a><a class="next" href="ch09.html"><span class="dir">次へ</span><span class="title">第9章 Pagination</span></a></nav>
+      </div>
+    </main>
+  </div>
+  <script src="../js/site.js"></script>
+  <script src="../js/curriculum.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

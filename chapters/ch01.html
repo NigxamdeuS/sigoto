@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第1章 PHP・オブジェクト指向の基礎 — CakePHP 0から実務まで</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body data-chapter="01">
+  <div id="site-nav" class="site-nav" aria-label="サイトナビ"></div>
+  <div class="app">
+    <aside class="sidebar" aria-label="目次">
+      <a class="brand" href="../index.html">
+        <div class="brand-title">CakePHP 0から実務まで</div>
+        <div class="brand-sub">たまたまに · 初心者向け全14章</div>
+      </a>
+      <nav id="sidebar-nav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <main class="main">
+      <div class="topbar">
+        <button type="button" class="menu-btn" id="menu-btn" aria-label="メニュー">メニュー</button>
+        <span>第1章</span>
+      </div>
+      <div class="content">
+        <header class="chapter-head">
+          <div class="eyebrow">第1章 · 初心者向け</div>
+          <h1>PHP・オブジェクト指向の基礎</h1>
+          <p class="lead">専門用語はあとにします。まずは「設計図」と「実物」の違いだけ押さえましょう。</p>
+        </header>
+        
+<section class="lesson" id="class">
+  <h2>1. クラスとは</h2>
+  <div class="callout"><code>クラス</code>＝ものの<strong>設計図</strong>（まだ実物ではない）</div>
+  <div class="analogy">
+    <span class="analogy-label">たとえ</span>
+    <p>クッキーの抜き型がクラス、焼いたクッキーがオブジェクトです。抜き型だけでは食べられません。でも抜き型があるから、同じ形を何個でも作れます。</p>
+  </div>
+  <p>プログラムでも「ユーザー」や「商品」を扱うとき、先に設計図を書きます。</p>
+<pre data-lang="php"><code>class User
+{
+}</code></pre>
+  <ul class="line-explain">
+    <li><code>class</code><span>「これから設計図を書きます」という宣言</span></li>
+    <li><code>User</code><span>設計図の名前（大文字始まりが慣例）</span></li>
+    <li><code>{ }</code><span>この中に中身を書く。今は空</span></li>
+  </ul>
+  <div class="tip">
+    <span class="tip-label">いま覚えること</span>
+    <p>クラスを書いただけでは、まだ何も動きません。「設計図を用意しただけ」です。</p>
+  </div>
+</section>
+
+<section class="lesson" id="object-new">
+  <h2>2. オブジェクトと<code>new</code></h2>
+  <div class="callout"><code>new</code>＝設計図から<strong>実物</strong>を作るスイッチ</div>
+  <p>実物のことを<strong>オブジェクト</strong>（またはインスタンス）と呼びます。</p>
+<pre data-lang="php"><code>$user = new User();</code></pre>
+  <ul class="line-explain">
+    <li><code>new User()</code><span>User設計図から1つ作る</span></li>
+    <li><code>$user =</code><span>作った実物に名前（変数）をつける</span></li>
+  </ul>
+  <p>同じ設計図から、別々の実物を何個でも作れます。</p>
+<pre data-lang="php"><code>$taro = new User();
+$hanako = new User();
+// $taro と $hanako は別人（別オブジェクト）</code></pre>
+  <div class="warn">
+    <span class="warn-label">つまずきやすい点</span>
+    <p><code>User</code>（クラス）と <code>$user</code>（オブジェクト）は別物です。大文字・小文字と <code>$</code> の有無に注目してください。</p>
+  </div>
+</section>
+
+<section class="lesson" id="property-method">
+  <h2>3. プロパティとメソッド</h2>
+  <div class="callout"><code>プロパティ</code>＝持っているデータ　／　<code>メソッド</code>＝できること（処理）</div>
+  <div class="analogy">
+    <span class="analogy-label">たとえ</span>
+    <p>人でいうと、名前や年齢がプロパティ。自己紹介する・歩く、がメソッドです。</p>
+  </div>
+<pre data-lang="php"><code>class User
+{
+    public $name;  // プロパティ（データ）
+
+    public function showName()  // メソッド（処理）
+    {
+        echo $this->name;
+    }
+}</code></pre>
+  <p><code>function</code> のあとの名前がメソッド名です。末尾の <code>()</code> は「呼び出すときに使う」印、と思ってください。</p>
+</section>
+
+<section class="lesson" id="arrow">
+  <h2>4. <code>-&gt;</code> の意味</h2>
+  <div class="callout"><code>-&gt;</code>＝「このオブジェクトの〜」と読む矢印</div>
+  <p>日本語にするとこうなります。</p>
+<pre data-lang="php"><code>$user = new User();
+$user->name = 'Taro';   // $user の name に Taro を入れる
+$user->showName();     // $user の showName を実行する</code></pre>
+  <div class="tip">
+    <span class="tip-label">読み方のコツ</span>
+    <p><code>$user-&gt;name</code> は「ユーザーの名前」。<code>$user-&gt;showName()</code> は「ユーザーに自己紹介させる」。</p>
+  </div>
+</section>
+
+<section class="lesson" id="this">
+  <h2>5. <code>$this</code> の意味</h2>
+  <div class="callout"><code>$this</code>＝いま動いている<strong>自分自身</strong>のオブジェクト</div>
+  <p>メソッドの中では、外側の <code>$user</code> という名前が見えません。なので「自分の名前」を指す特別な言葉 <code>$this</code> を使います。</p>
+<pre data-lang="php"><code>class User
+{
+    public $name;
+
+    public function showName()
+    {
+        echo $this->name;
+    }
+}</code></pre>
+  <p>ここで出てくる短い式がこれです。</p>
+<pre data-lang="php"><code>$this->name</code></pre>
+  <p>意味は「このオブジェクトが持っている <code>name</code>」です。</p>
+  <div class="analogy">
+    <span class="analogy-label">たとえ</span>
+    <p>教室で先生が「自分の名前を書いて」と言うときの「自分」が <code>$this</code> です。太郎なら太郎、花子なら花子を指します。</p>
+  </div>
+  <div class="tip">
+    <span class="tip-label">CakePHPでも同じ</span>
+    <p>あとで出てくる <code>$this-&gt;set()</code> や <code>$this-&gt;request</code> も、「今のController自身の〜」という意味です。</p>
+  </div>
+</section>
+
+<section class="lesson" id="visibility">
+  <h2>6. <code>public</code> / <code>protected</code> / <code>private</code></h2>
+  <div class="callout">「外から触ってよいか」のルール（鍵の種類）</div>
+  <ul>
+    <li><code>public</code> … 誰でも触ってOK（公開）</li>
+    <li><code>protected</code> … 自分と、引き継いだ子クラスだけ</li>
+    <li><code>private</code> … そのクラスの中だけ（非公開）</li>
+  </ul>
+<pre data-lang="php"><code>class User
+{
+    public $name;        // 外から見える
+    protected $role;     // 家族（継承先）まで
+    private $password;   // 自分の中だけ
+}</code></pre>
+  <div class="note-box">
+    <span class="note-label">初心者への案内</span>
+    <p>最初は「だいたい public で書いてある」と読み流してOKです。パスワードのような秘密は private、とだけ覚えておきましょう。</p>
+  </div>
+</section>
+
+<section class="lesson" id="construct">
+  <h2>7. コンストラクタ <code>__construct()</code></h2>
+  <div class="callout"><code>__construct()</code>＝<code>new</code> した瞬間に自動で走る「初期セット」</div>
+  <p>作った直後に名前を入れておきたい、というときに使います。</p>
+<pre data-lang="php"><code>class User
+{
+    public $name;
+
+    public function __construct($name)
+    {
+        $this->name = $name;
+    }
+}
+
+$user = new User('Taro');
+// 作った瞬間に name が Taro になる</code></pre>
+  <div class="tip">
+    <span class="tip-label">名前の覚え方</span>
+    <p>construct＝組み立てる。組み立てた直後の処理、と覚えると楽です。</p>
+  </div>
+</section>
+
+<section class="lesson" id="const">
+  <h2>8. クラス定数・<code>const</code></h2>
+  <div class="callout"><code>const</code>＝変わらない値に名前を付けたもの</div>
+  <p>マジックナンバー（意味の分からない数字や文字列）を減らすために使います。</p>
+<pre data-lang="php"><code>class User
+{
+    public const ROLE_ADMIN = 'admin';
+}
+
+echo User::ROLE_ADMIN;  // admin</code></pre>
+  <p>定数はオブジェクトではなく<strong>クラス名</strong>から、<code>::</code> で取ります（次の項目）。</p>
+</section>
+
+<section class="lesson" id="extends">
+  <h2>9. 継承と<code>extends</code></h2>
+  <div class="callout"><code>extends</code>＝親の設計図を引き継いで、少し改造する</div>
+  <div class="analogy">
+    <span class="analogy-label">たとえ</span>
+    <p>「動物」の設計図を引き継いで「犬」を作る、イメージです。犬は動物の性質を持ちつつ、鳴き方だけ変えられます。</p>
+  </div>
+<pre data-lang="php"><code>class Animal
+{
+    public function speak()
+    {
+        echo '...';
+    }
+}
+
+class Dog extends Animal
+{
+    public function speak()
+    {
+        echo 'wan';
+    }
+}</code></pre>
+  <div class="tip">
+    <span class="tip-label">CakePHPでの登場シーン</span>
+    <p><code>class TodosController extends AppController</code> のように、「CakePHP用意のControllerを引き継ぐ」形で必ず使います。</p>
+  </div>
+</section>
+
+<section class="lesson" id="parent">
+  <h2>10. <code>parent::</code> と <code>::</code></h2>
+  <div class="callout"><code>::</code>＝クラス側のものを呼ぶ　／　<code>parent::</code>＝親クラスのものを呼ぶ</div>
+  <p>矢印 <code>-&gt;</code> は「実物の〜」、二重コロン <code>::</code> は「設計図（クラス）の〜」と分けると混乱しにくいです。</p>
+<pre data-lang="php"><code>class Dog extends Animal
+{
+    public function speak()
+    {
+        parent::speak();  // まず親の speak を実行
+        echo ' wan';
+    }
+}</code></pre>
+</section>
+
+<section class="lesson" id="exercise">
+  <h2>第1章 やってみよう</h2>
+  <div class="exercise">
+    <div class="exercise-label">EXERCISE</div>
+    <h3>Product（商品）を作る</h3>
+    <ol>
+      <li><code>Product</code> クラスを作る</li>
+      <li>プロパティ <code>$name</code> と <code>$price</code> を持たせる</li>
+      <li>コンストラクタで両方セットする</li>
+      <li><code>show()</code> で「本: 1200円」のように表示する</li>
+    </ol>
+    <p style="margin-top:0.75rem;color:#a3a3a3;font-size:0.9rem;">ヒント: 第1章の User クラスを、名前を変えて写すところから始めましょう。</p>
+  </div>
+</section>
+        <nav class="pager"><a href="../index.html"><span class="dir">前へ</span><span class="title">学習目次</span></a><a class="next" href="ch02.html"><span class="dir">次へ</span><span class="title">第2章 CakePHPとMVC</span></a></nav>
+      </div>
+    </main>
+  </div>
+  <script src="../js/site.js"></script>
+  <script src="../js/curriculum.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

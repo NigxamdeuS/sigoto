@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CakePHP 0から実務まで — 学習目次</title>
+  <meta name="description" content="プログラミング初心者向け。CakePHPを0から実務レベルまで、たとえ話と短いコードで学ぶ全14章。" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="site-nav" class="site-nav" aria-label="サイトナビ"></div>
+  <div class="app">
+    <aside class="sidebar" aria-label="目次">
+      <a class="brand" href="index.html">
+        <div class="brand-title">CakePHP 0から実務まで</div>
+        <div class="brand-sub">たまたまに · 初心者向け全14章</div>
+      </a>
+      <nav id="sidebar-nav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <main class="main">
+      <div class="topbar">
+        <button type="button" class="menu-btn" id="menu-btn" aria-label="メニュー">メニュー</button>
+        <span>学習目次</span>
+      </div>
+      <div class="content">
+        <header class="hero">
+          <div class="hero-label">初心者OK · <a href="https://nigxam.com/" rel="noopener">nigxam.com</a></div>
+          <h1>CakePHP<br />0から実務まで</h1>
+          <p>
+            「クラスって何？」「$this が分からない」からで大丈夫です。
+            むずかしい言葉は日本語で言い換え、コードは短く、一行ずつ意味を説明します。
+          </p>
+        </header>
+
+        <section class="lesson" id="how">
+          <h2>このサイトの使い方</h2>
+          <div class="callout">上から順に読むだけでOK。わからない言葉が出ても、その場で説明します。</div>
+          <div class="tip">
+            <span class="tip-label">POINT</span>
+            <ul>
+              <li>左の灰色の縦線＝いちばん大事な一文</li>
+              <li>コード右上のアイコン＝コピーできます</li>
+              <li>各章の最後に「やってみよう」があります（答えは自分で書く練習）</li>
+            </ul>
+          </div>
+          <div class="analogy">
+            <span class="analogy-label">たとえ</span>
+            <p>Webアプリ作りは「レストラン」に似ています。お客さん（ブラウザ）の注文を受けて（Controller）、厨房で材料を用意し（Model）、盛り付けて出す（View）。この役割分担が MVC です。詳しくは第2章で。</p>
+          </div>
+          <p>まずは第1章で PHP の「設計図（クラス）」を読めるようになりましょう。CakePHP のコードは、ほぼここが土台です。</p>
+          <p><a href="https://nigxam.com/" rel="noopener">たまたまにのPostgreSQLメモ</a> とセットで使うと、DBまわりも一緒に学べます。</p>
+        </section>
+
+        <section>
+          <h2 style="font-size:1.2rem;margin-bottom:1rem;">全章一覧</h2>
+          <div class="toc-grid" id="home-toc"></div>
+        </section>
+
+        <nav class="pager">
+          <span></span>
+          <a class="next" href="chapters/ch01.html">
+            <span class="dir">まずはここから</span>
+            <span class="title">第1章 PHP・オブジェクト指向の基礎</span>
+          </a>
+        </nav>
+      </div>
+    </main>
+  </div>
+  <script src="js/site.js"></script>
+  <script src="js/curriculum.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

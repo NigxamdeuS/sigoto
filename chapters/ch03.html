@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第3章 Controllerの基本 — CakePHP 0から実務まで</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body data-chapter="03">
+  <div id="site-nav" class="site-nav" aria-label="サイトナビ"></div>
+  <div class="app">
+    <aside class="sidebar" aria-label="目次">
+      <a class="brand" href="../index.html">
+        <div class="brand-title">CakePHP 0から実務まで</div>
+        <div class="brand-sub">たまたまに · 初心者向け全14章</div>
+      </a>
+      <nav id="sidebar-nav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <main class="main">
+      <div class="topbar">
+        <button type="button" class="menu-btn" id="menu-btn" aria-label="メニュー">メニュー</button>
+        <span>第3章</span>
+      </div>
+      <div class="content">
+        <header class="chapter-head">
+          <div class="eyebrow">第3章 · 初心者向け</div>
+          <h1>Controllerの基本</h1>
+          <p class="lead">Controllerは「受付」。受け取って、処理して、画面へ渡す係です。</p>
+        </header>
+        
+<section class="lesson" id="make-controller">
+  <h2>1. Controllerの作り方・読み方</h2>
+  <div class="callout">名前は <code>〇〇Controller</code>。ファイル名も同じ</div>
+<pre data-lang="php"><code>namespace App\Controller;
+
+class TodosController extends AppController
+{
+    public function index()
+    {
+    }
+}</code></pre>
+  <ul class="line-explain">
+    <li><code>extends AppController</code><span>共通の土台を引き継ぐ（第1章の継承）</span></li>
+    <li><code>index()</code><span>一覧用の窓口（Action）</span></li>
+  </ul>
+</section>
+
+<section class="lesson" id="action">
+  <h2>2. Actionとは</h2>
+  <div class="callout"><code>Action</code>＝1リクエストの入り口になる public メソッド</div>
+  <p>よく使う名前（覚えると楽）：</p>
+  <ul>
+    <li><code>index</code> … 一覧</li>
+    <li><code>view</code> … 詳細</li>
+    <li><code>add</code> … 新規</li>
+    <li><code>edit</code> … 編集</li>
+    <li><code>delete</code> … 削除</li>
+  </ul>
+</section>
+
+<section class="lesson" id="this">
+  <h2>3. <code>$this</code> が何を指しているか</h2>
+  <div class="callout">Controllerの中の <code>$this</code>＝今動いている受付係そのもの</div>
+<pre data-lang="php"><code>$this->getRequest();  // お客さんの注文内容
+$this->set(...);      // 厨房から来た料理をトレーに載せる
+$this->redirect(...); // 別の窓口へ案内する</code></pre>
+  <p>第1章の <code>$this</code> と同じ考え方です。</p>
+</section>
+
+<section class="lesson" id="request">
+  <h2>4. Requestとは</h2>
+  <div class="callout"><code>Request</code>＝ブラウザから届いた荷物（URL・入力・ボタンなど）</div>
+<pre data-lang="php"><code>$request = $this->getRequest();</code></pre>
+</section>
+
+<section class="lesson" id="get">
+  <h2>5. GETパラメータの取得</h2>
+  <p>URLの <code>?</code> 以降です。例: <code>/todos?status=done</code></p>
+<pre data-lang="php"><code>$status = $this->request->getQuery('status');
+// $status は 'done'</code></pre>
+  <div class="tip">
+    <span class="tip-label">覚え方</span>
+    <p>GET＝見える荷物（URLに出る）。検索やページ番号によく使います。</p>
+  </div>
+</section>
+
+<section class="lesson" id="post">
+  <h2>6. POSTデータの取得</h2>
+  <p>フォーム送信など、URLに出さない荷物です。</p>
+<pre data-lang="php"><code>if ($this->request->is('post')) {
+    $title = $this->request->getData('title');
+    $data = $this->request->getData(); // 全部
+}</code></pre>
+  <div class="warn">
+    <span class="warn-label">大事</span>
+    <p>「POSTで来たときだけ保存する」と <code>is('post')</code> で確認するのが基本です。</p>
+  </div>
+</section>
+
+<section class="lesson" id="url-param">
+  <h2>7. URLパラメータの取得</h2>
+  <div class="callout"><code>/todos/view/5</code> の <code>5</code> は、メソッドの引数で受け取ることが多い</div>
+<pre data-lang="php"><code>public function view($id = null)
+{
+    // /todos/view/5 なら $id は 5
+}</code></pre>
+</section>
+
+<section class="lesson" id="set">
+  <h2>8. <code>$this-&gt;set()</code> でViewへデータを渡す</h2>
+  <div class="callout"><code>set</code>＝画面側で使える変数を渡す</div>
+<pre data-lang="php"><code>$this->set('title', '買い物');
+// View で $title が使えるようになる</code></pre>
+  <div class="analogy">
+    <span class="analogy-label">たとえ</span>
+    <p>受付がトレーにメモを載せて、盛り付け係（View）に渡すイメージです。</p>
+  </div>
+</section>
+
+<section class="lesson" id="redirect">
+  <h2>9. Redirect</h2>
+  <div class="callout">保存などのあと、「別のURLへ移動させる」</div>
+<pre data-lang="php"><code>return $this->redirect(['action' => 'index']);
+// 一覧へ戻す、が定番</code></pre>
+</section>
+
+<section class="lesson" id="error">
+  <h2>10. エラー処理の基本</h2>
+  <p>「無いのに詳細を見ようとした」などは、例外で止めます。</p>
+<pre data-lang="php"><code>use Cake\Http\Exception\NotFoundException;
+
+public function view($id = null)
+{
+    if (!$id) {
+        throw new NotFoundException('見つかりません');
+    }
+}</code></pre>
+  <div class="note-box">
+    <span class="note-label">今はこれだけでOK</span>
+    <p>ユーザー向けメッセージは Flash、詳しい記録はログ（後の章）。まずは「止める方法がある」と知れば十分です。</p>
+  </div>
+</section>
+
+<section class="lesson" id="exercise">
+  <h2>第3章 やってみよう</h2>
+  <div class="exercise">
+    <div class="exercise-label">EXERCISE</div>
+    <ol>
+      <li>GETで名前を受け取る Action を想像して書く</li>
+      <li><code>set</code> で View に渡す1行を書く</li>
+      <li>保存後に一覧へ <code>redirect</code> する1行を書く</li>
+    </ol>
+  </div>
+</section>
+        <nav class="pager"><a href="ch02.html"><span class="dir">前へ</span><span class="title">第2章 CakePHPとMVC</span></a><a class="next" href="ch04.html"><span class="dir">次へ</span><span class="title">第4章 View・画面表示</span></a></nav>
+      </div>
+    </main>
+  </div>
+  <script src="../js/site.js"></script>
+  <script src="../js/curriculum.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

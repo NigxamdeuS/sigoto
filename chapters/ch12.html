@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第12章 ログ・エラー処理 — CakePHP 0から実務まで</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body data-chapter="12">
+  <div id="site-nav" class="site-nav" aria-label="サイトナビ"></div>
+  <div class="app">
+    <aside class="sidebar" aria-label="目次">
+      <a class="brand" href="../index.html">
+        <div class="brand-title">CakePHP 0から実務まで</div>
+        <div class="brand-sub">たまたまに · 初心者向け全14章</div>
+      </a>
+      <nav id="sidebar-nav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <main class="main">
+      <div class="topbar">
+        <button type="button" class="menu-btn" id="menu-btn" aria-label="メニュー">メニュー</button>
+        <span>第12章</span>
+      </div>
+      <div class="content">
+        <header class="chapter-head">
+          <div class="eyebrow">第12章 · 初心者向け</div>
+          <h1>ログ・エラー処理</h1>
+          <p class="lead">ユーザーには短く、自分たちには詳しく。失敗に備える章です。</p>
+        </header>
+        
+<section class="lesson" id="what-is-log">
+  <h2>1. ログとは</h2>
+  <div class="callout">アプリの出来事をファイルなどに残した記録</div>
+</section>
+
+<section class="lesson" id="why">
+  <h2>2. なぜログを残すのか</h2>
+  <p>本番では詳細エラーを画面に出せません。後から原因を追うために必要です。</p>
+</section>
+
+<section class="lesson" id="cake-log">
+  <h2>3. CakePHPでログ出力</h2>
+<pre data-lang="php"><code>use Cake\Log\Log;
+
+Log::write('info', '一覧を表示しました');
+Log::error('保存失敗: ' . $e->getMessage());</code></pre>
+</section>
+
+<section class="lesson" id="levels">
+  <h2>4. info / warning / error</h2>
+  <ul>
+    <li><code>info</code> … 普通の記録</li>
+    <li><code>warning</code> … 変だけど動いている</li>
+    <li><code>error</code> … 失敗</li>
+  </ul>
+</section>
+
+<section class="lesson" id="exception">
+  <h2>5. Exception</h2>
+  <div class="callout">「ここで止めたい異常」を表すもの。throw すると処理が中断される</div>
+</section>
+
+<section class="lesson" id="try-catch">
+  <h2>6. try / catch</h2>
+  <div class="analogy">
+    <span class="analogy-label">たとえ</span>
+    <p>try＝挑戦。catch＝失敗したときの受け網。</p>
+  </div>
+<pre data-lang="php"><code>try {
+    $this->Todos->saveOrFail($todo);
+} catch (\Throwable $e) {
+    Log::error($e->getMessage());
+    $this->Flash->error('保存に失敗しました');
+}</code></pre>
+</section>
+
+<section class="lesson" id="on-error">
+  <h2>7. エラー時の処理</h2>
+  <div class="tip">
+    <span class="tip-label">基本パターン</span>
+    <ol>
+      <li>ユーザーには短い Flash</li>
+      <li>ログには詳細</li>
+      <li>必要ならROLLBACK</li>
+      <li>安全な画面へ戻す</li>
+    </ol>
+  </div>
+</section>
+
+<section class="lesson" id="exercise">
+  <h2>第12章 やってみよう</h2>
+  <div class="exercise">
+    <div class="exercise-label">EXERCISE</div>
+    <ol>
+      <li>失敗時に Log::error する catch を書く</li>
+      <li>ユーザー向け文面は1行にする</li>
+    </ol>
+  </div>
+</section>
+        <nav class="pager"><a href="ch11.html"><span class="dir">前へ</span><span class="title">第11章 ログイン・権限制御</span></a><a class="next" href="ch13.html"><span class="dir">次へ</span><span class="title">第13章 CSV出力</span></a></nav>
+      </div>
+    </main>
+  </div>
+  <script src="../js/site.js"></script>
+  <script src="../js/curriculum.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

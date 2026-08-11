@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第6章 CRUD — CakePHP 0から実務まで</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body data-chapter="06">
+  <div id="site-nav" class="site-nav" aria-label="サイトナビ"></div>
+  <div class="app">
+    <aside class="sidebar" aria-label="目次">
+      <a class="brand" href="../index.html">
+        <div class="brand-title">CakePHP 0から実務まで</div>
+        <div class="brand-sub">たまたまに · 初心者向け全14章</div>
+      </a>
+      <nav id="sidebar-nav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <main class="main">
+      <div class="topbar">
+        <button type="button" class="menu-btn" id="menu-btn" aria-label="メニュー">メニュー</button>
+        <span>第6章</span>
+      </div>
+      <div class="content">
+        <header class="chapter-head">
+          <div class="eyebrow">第6章 · 初心者向け</div>
+          <h1>CRUD</h1>
+          <p class="lead">データの基本は4つだけ。作る・読む・更新・削除です。</p>
+        </header>
+        
+<section class="lesson" id="what-is-crud">
+  <h2>1. CRUDとは</h2>
+  <div class="callout">Create 作る / Read 読む / Update 更新 / Delete 削除</div>
+  <p>TODOアプリも会員管理も、ほとんどこの組み合わせです。</p>
+</section>
+
+<section class="lesson" id="index">
+  <h2>2. 一覧表示（Read）</h2>
+<pre data-lang="php"><code>public function index()
+{
+    $todos = $this->Todos->find()->all();
+    $this->set(compact('todos'));
+}</code></pre>
+  <p>「全部取って画面へ渡す」だけのシンプルな形です。</p>
+</section>
+
+<section class="lesson" id="view">
+  <h2>3. 詳細表示（Read）</h2>
+<pre data-lang="php"><code>public function view($id = null)
+{
+    $todo = $this->Todos->get($id);
+    $this->set(compact('todo'));
+}</code></pre>
+</section>
+
+<section class="lesson" id="add">
+  <h2>4. 新規登録（Create）</h2>
+  <div class="tip">
+    <span class="tip-label">流れ（暗記用）</span>
+    <ol>
+      <li>空のEntityを用意</li>
+      <li>POSTなら入力を流し込む</li>
+      <li>save できたら Flash＋一覧へ</li>
+      <li>失敗ならエラー表示</li>
+    </ol>
+  </div>
+<pre data-lang="php"><code>public function add()
+{
+    $todo = $this->Todos->newEmptyEntity();
+    if ($this->request->is('post')) {
+        $todo = $this->Todos->patchEntity($todo, $this->request->getData());
+        if ($this->Todos->save($todo)) {
+            $this->Flash->success('登録しました');
+            return $this->redirect(['action' => 'index']);
+        }
+        $this->Flash->error('登録に失敗しました');
+    }
+    $this->set(compact('todo'));
+}</code></pre>
+</section>
+
+<section class="lesson" id="new-entity">
+  <h2>5. Entityの作成</h2>
+<pre data-lang="php"><code>$todo = $this->Todos->newEmptyEntity();           // 空
+$todo = $this->Todos->newEntity(['title' => '原稿']); // 最初から値あり</code></pre>
+</section>
+
+<section class="lesson" id="patch">
+  <h2>6. <code>patchEntity()</code></h2>
+  <div class="callout">フォームの入力をEntityに貼り付け＋チェック（バリデーション）</div>
+<pre data-lang="php"><code>$todo = $this->Todos->patchEntity($todo, $this->request->getData());</code></pre>
+</section>
+
+<section class="lesson" id="save">
+  <h2>7. <code>save()</code></h2>
+  <div class="callout">DBに保存。成功したらデータ、失敗したら false</div>
+<pre data-lang="php"><code>if ($this->Todos->save($todo)) {
+    // 成功
+}</code></pre>
+</section>
+
+<section class="lesson" id="edit">
+  <h2>8. 更新（Update）</h2>
+  <p>新規との違いは「先に既存データを get する」ことです。</p>
+<pre data-lang="php"><code>public function edit($id = null)
+{
+    $todo = $this->Todos->get($id);
+    if ($this->request->is(['post', 'put', 'patch'])) {
+        $todo = $this->Todos->patchEntity($todo, $this->request->getData());
+        if ($this->Todos->save($todo)) {
+            $this->Flash->success('更新しました');
+            return $this->redirect(['action' => 'index']);
+        }
+        $this->Flash->error('更新に失敗しました');
+    }
+    $this->set(compact('todo'));
+}</code></pre>
+</section>
+
+<section class="lesson" id="delete">
+  <h2>9. 削除（Delete）</h2>
+<pre data-lang="php"><code>public function delete($id = null)
+{
+    $this->request->allowMethod(['post', 'delete']);
+    $todo = $this->Todos->get($id);
+    if ($this->Todos->delete($todo)) {
+        $this->Flash->success('削除しました');
+    } else {
+        $this->Flash->error('削除に失敗しました');
+    }
+    return $this->redirect(['action' => 'index']);
+}</code></pre>
+  <div class="warn">
+    <span class="warn-label">なぜ allowMethod？</span>
+    <p>URLを直接開いただけ（GET）で消えないようにする安全策です。</p>
+  </div>
+</section>
+
+<section class="lesson" id="validation">
+  <h2>10. バリデーション</h2>
+  <div class="callout">入力ルール。「タイトル必須」などをTableに書く</div>
+<pre data-lang="php"><code>public function validationDefault(Validator $validator): Validator
+{
+    $validator
+        ->scalar('title')
+        ->maxLength('title', 100)
+        ->notEmptyString('title');
+    return $validator;
+}</code></pre>
+</section>
+
+<section class="lesson" id="exercise">
+  <h2>第6章 CRUD総合演習</h2>
+  <div class="exercise">
+    <div class="exercise-label">EXERCISE</div>
+    <ol>
+      <li>index / view / add / edit / delete の骨格を写経する</li>
+      <li>title 必須バリデーションを入れる</li>
+      <li>成功・失敗で Flash を出し分ける</li>
+    </ol>
+  </div>
+</section>
+        <nav class="pager"><a href="ch05.html"><span class="dir">前へ</span><span class="title">第5章 Model・データベース</span></a><a class="next" href="ch07.html"><span class="dir">次へ</span><span class="title">第7章 Session</span></a></nav>
+      </div>
+    </main>
+  </div>
+  <script src="../js/site.js"></script>
+  <script src="../js/curriculum.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

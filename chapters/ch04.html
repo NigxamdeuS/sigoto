@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第4章 View・画面表示 — CakePHP 0から実務まで</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body data-chapter="04">
+  <div id="site-nav" class="site-nav" aria-label="サイトナビ"></div>
+  <div class="app">
+    <aside class="sidebar" aria-label="目次">
+      <a class="brand" href="../index.html">
+        <div class="brand-title">CakePHP 0から実務まで</div>
+        <div class="brand-sub">たまたまに · 初心者向け全14章</div>
+      </a>
+      <nav id="sidebar-nav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <main class="main">
+      <div class="topbar">
+        <button type="button" class="menu-btn" id="menu-btn" aria-label="メニュー">メニュー</button>
+        <span>第4章</span>
+      </div>
+      <div class="content">
+        <header class="chapter-head">
+          <div class="eyebrow">第4章 · 初心者向け</div>
+          <h1>View・画面表示</h1>
+          <p class="lead">Viewは「見た目係」。渡されたデータを、安全にHTMLへします。</p>
+        </header>
+        
+<section class="lesson" id="what-is-view">
+  <h2>1. Viewとは</h2>
+  <div class="callout"><code>View</code>＝画面のHTMLを作るファイル</div>
+  <p>だいたい Action と同じ名前です。<code>index()</code> なら <code>index.php</code>。</p>
+</section>
+
+<section class="lesson" id="display-vars">
+  <h2>2. Controllerから渡された値を表示</h2>
+<pre data-lang="php"><code>// Controller
+$this->set('title', '買い物');</code></pre>
+<pre data-lang="ctp" data-label="VIEW"><code>&lt;p&gt;&lt;?= h($title) ?&gt;&lt;/p&gt;</code></pre>
+  <p>Controllerで <code>set</code> した名前が、Viewでは変数になります。</p>
+</section>
+
+<section class="lesson" id="echo-short">
+  <h2>3. <code>&lt;?= ?&gt;</code> の意味</h2>
+  <div class="callout"><code>&lt;?= $x ?&gt;</code>＝「$x をここに出力」の短い書き方</div>
+  <p>長い書き方は <code>&lt;?php echo $x; ?&gt;</code> です。同じ意味です。</p>
+</section>
+
+<section class="lesson" id="h">
+  <h2>4. <code>h()</code> とは</h2>
+  <div class="callout"><code>h()</code>＝危険な文字を無害化する（エスケープ）</div>
+  <div class="analogy">
+    <span class="analogy-label">たとえ</span>
+    <p>ユーザーが入力した文字を、そのままページに貼ると「悪いスクリプト」が混ざることがあります。<code>h()</code> はそれを普通の文字として表示するガードです。</p>
+  </div>
+<pre data-lang="ctp" data-label="VIEW"><code>&lt;?= h($todo->title) ?&gt;</code></pre>
+  <div class="warn">
+    <span class="warn-label">習慣にすること</span>
+    <p>画面に出す文字列には、基本いつも <code>h()</code> を付けましょう。</p>
+  </div>
+</section>
+
+<section class="lesson" id="if">
+  <h2>5. ifによる表示切り替え</h2>
+  <p>完了なら「完了」、まだなら「未完了」のように出し分けます。</p>
+<pre data-lang="ctp" data-label="VIEW"><code>&lt;?php if ($todo->done): ?&gt;
+  &lt;span&gt;完了&lt;/span&gt;
+&lt;?php else: ?&gt;
+  &lt;span&gt;未完了&lt;/span&gt;
+&lt;?php endif; ?&gt;</code></pre>
+</section>
+
+<section class="lesson" id="foreach">
+  <h2>6. foreachで一覧表示</h2>
+  <div class="callout"><code>foreach</code>＝リストを1件ずつ取り出す繰り返し</div>
+<pre data-lang="ctp" data-label="VIEW"><code>&lt;ul&gt;
+&lt;?php foreach ($todos as $todo): ?&gt;
+  &lt;li&gt;&lt;?= h($todo->title) ?&gt;&lt;/li&gt;
+&lt;?php endforeach; ?&gt;
+&lt;/ul&gt;</code></pre>
+  <p><code>$todos</code> が全体、<code>$todo</code> が今見ている1件です。</p>
+</section>
+
+<section class="lesson" id="form">
+  <h2>7. Form</h2>
+  <p>CakePHPにはフォームを楽に書く道具（FormHelper）があります。</p>
+<pre data-lang="ctp" data-label="VIEW"><code>&lt;?= $this->Form->create($todo) ?&gt;
+&lt;?= $this->Form->control('title', ['label' => 'タイトル']) ?&gt;
+&lt;?= $this->Form->button('保存') ?&gt;
+&lt;?= $this->Form->end() ?&gt;</code></pre>
+  <div class="tip">
+    <span class="tip-label">いま知っておくこと</span>
+    <p>自分で &lt;input&gt; を全部書かなくても、Helper が用意してくれます。セキュリティ用のトークンも付きます。</p>
+  </div>
+</section>
+
+<section class="lesson" id="element">
+  <h2>8. Element</h2>
+  <div class="callout"><code>Element</code>＝使い回す部品テンプレート</div>
+  <p>ヘッダーや「1件分のカード」など、同じHTMLを何度も書かないために使います。</p>
+<pre data-lang="ctp" data-label="VIEW"><code>&lt;?= $this->element('todo_item', ['todo' => $todo]) ?&gt;</code></pre>
+</section>
+
+<section class="lesson" id="layout">
+  <h2>9. Layout</h2>
+  <div class="callout"><code>Layout</code>＝全ページ共通の外枠（枠・ナビ・フッター）</div>
+  <p>各ページの中身は、この外枠の真ん中に差し込まれます。</p>
+</section>
+
+<section class="lesson" id="flash">
+  <h2>10. エラー情報を画面に表示</h2>
+  <p>「保存しました」「失敗しました」などの短い伝言です。</p>
+<pre data-lang="php"><code>// Controller
+$this->Flash->success('保存しました');
+$this->Flash->error('失敗しました');</code></pre>
+<pre data-lang="ctp" data-label="LAYOUT"><code>&lt;?= $this->Flash->render() ?&gt;</code></pre>
+</section>
+
+<section class="lesson" id="exercise">
+  <h2>第4章 やってみよう</h2>
+  <div class="exercise">
+    <div class="exercise-label">EXERCISE</div>
+    <ol>
+      <li>配列を foreach で &lt;li&gt; 表示するViewを書く</li>
+      <li>出力すべてに <code>h()</code> を付ける</li>
+      <li>タイトル入力の FormHelper を写経する</li>
+    </ol>
+  </div>
+</section>
+        <nav class="pager"><a href="ch03.html"><span class="dir">前へ</span><span class="title">第3章 Controllerの基本</span></a><a class="next" href="ch05.html"><span class="dir">次へ</span><span class="title">第5章 Model・データベース</span></a></nav>
+      </div>
+    </main>
+  </div>
+  <script src="../js/site.js"></script>
+  <script src="../js/curriculum.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第9章 Pagination — CakePHP 0から実務まで</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body data-chapter="09">
+  <div id="site-nav" class="site-nav" aria-label="サイトナビ"></div>
+  <div class="app">
+    <aside class="sidebar" aria-label="目次">
+      <a class="brand" href="../index.html">
+        <div class="brand-title">CakePHP 0から実務まで</div>
+        <div class="brand-sub">たまたまに · 初心者向け全14章</div>
+      </a>
+      <nav id="sidebar-nav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <main class="main">
+      <div class="topbar">
+        <button type="button" class="menu-btn" id="menu-btn" aria-label="メニュー">メニュー</button>
+        <span>第9章</span>
+      </div>
+      <div class="content">
+        <header class="chapter-head">
+          <div class="eyebrow">第9章 · 初心者向け</div>
+          <h1>Pagination</h1>
+          <p class="lead">件数が多いときは、ページに分けて少しずつ表示します。</p>
+        </header>
+        
+<section class="lesson" id="what-is-paging">
+  <h2>1. ページングとは</h2>
+  <div class="callout">結果を「1ページあたり○件」に分けて見せる仕組み</div>
+  <div class="analogy">
+    <span class="analogy-label">たとえ</span>
+    <p>本の目次や、検索結果の「1 2 3 …」ボタンです。</p>
+  </div>
+</section>
+
+<section class="lesson" id="why">
+  <h2>2. なぜPaginationが必要なのか</h2>
+  <p>1万件を一度に出すと、遅いし読めません。10件ずつにすると快適です。</p>
+</section>
+
+<section class="lesson" id="paginate">
+  <h2>3. <code>paginate()</code></h2>
+<pre data-lang="php"><code>$todos = $this->paginate($this->Todos->find());
+$this->set(compact('todos'));</code></pre>
+</section>
+
+<section class="lesson" id="limit">
+  <h2>4. 件数設定</h2>
+<pre data-lang="php"><code>public array $paginate = [
+    'limit' => 10,  // 1ページ10件
+];</code></pre>
+</section>
+
+<section class="lesson" id="order">
+  <h2>5. 並び順</h2>
+<pre data-lang="php"><code>public array $paginate = [
+    'limit' => 10,
+    'order' => ['Todos.id' => 'desc'],
+];</code></pre>
+</section>
+
+<section class="lesson" id="search">
+  <h2>6. 検索＋Pagination</h2>
+  <p>先に where で絞り、そのクエリを paginate に渡します。</p>
+<pre data-lang="php"><code>$q = $this->request->getQuery('q');
+$query = $this->Todos->find();
+if ($q !== null && $q !== '') {
+    $query->where(['title LIKE' => '%' . $q . '%']);
+}
+$todos = $this->paginate($query);</code></pre>
+</section>
+
+<section class="lesson" id="view-links">
+  <h2>7. View側でページリンクを表示</h2>
+<pre data-lang="ctp" data-label="VIEW"><code>&lt;?= $this->Paginator->prev('前へ') ?&gt;
+&lt;?= $this->Paginator->numbers() ?&gt;
+&lt;?= $this->Paginator->next('次へ') ?&gt;</code></pre>
+</section>
+
+<section class="lesson" id="exercise">
+  <h2>第9章 やってみよう</h2>
+  <div class="exercise">
+    <div class="exercise-label">EXERCISE</div>
+    <ol>
+      <li>limit を 10 にする</li>
+      <li>検索語があるときだけ where する</li>
+      <li>前へ・次へリンクをViewに置く</li>
+    </ol>
+  </div>
+</section>
+        <nav class="pager"><a href="ch08.html"><span class="dir">前へ</span><span class="title">第8章 Component</span></a><a class="next" href="ch10.html"><span class="dir">次へ</span><span class="title">第10章 Transaction</span></a></nav>
+      </div>
+    </main>
+  </div>
+  <script src="../js/site.js"></script>
+  <script src="../js/curriculum.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

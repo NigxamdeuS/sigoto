@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第5章 Model・データベース — CakePHP 0から実務まで</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body data-chapter="05">
+  <div id="site-nav" class="site-nav" aria-label="サイトナビ"></div>
+  <div class="app">
+    <aside class="sidebar" aria-label="目次">
+      <a class="brand" href="../index.html">
+        <div class="brand-title">CakePHP 0から実務まで</div>
+        <div class="brand-sub">たまたまに · 初心者向け全14章</div>
+      </a>
+      <nav id="sidebar-nav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <main class="main">
+      <div class="topbar">
+        <button type="button" class="menu-btn" id="menu-btn" aria-label="メニュー">メニュー</button>
+        <span>第5章</span>
+      </div>
+      <div class="content">
+        <header class="chapter-head">
+          <div class="eyebrow">第5章 · 初心者向け</div>
+          <h1>Model・データベース</h1>
+          <p class="lead">データベースは「大きな表」。CakePHPでは Table と Entity に分けて扱います。</p>
+        </header>
+        
+<section class="lesson" id="what-is-model">
+  <h2>1. CakePHPのModelとは</h2>
+  <div class="callout">Modelまわり＝データの読み書きを担当する係</div>
+  <p>初心者はまず次の2つだけ覚えればOKです。</p>
+  <ul>
+    <li><strong>Table</strong> … 表全体を操作（探す・保存する）</li>
+    <li><strong>Entity</strong> … 表の1行分（1件のデータ）</li>
+  </ul>
+</section>
+
+<section class="lesson" id="table-entity">
+  <h2>2. TableとEntity</h2>
+  <div class="analogy">
+    <span class="analogy-label">たとえ</span>
+    <p>Excelでいうと、シート全体の操作が Table。1行が Entity です。</p>
+  </div>
+<pre data-lang="php"><code>$todo->title;  // 1件のタイトル
+$todo->done;   // 1件の完了フラグ</code></pre>
+</section>
+
+<section class="lesson" id="use-model">
+  <h2>3. ControllerからModelを使う</h2>
+<pre data-lang="php"><code>$todosTable = $this->fetchTable('Todos');
+// 以降 $this->Todos のように書ける環境もあります</code></pre>
+  <p>「Todosという表係を借りる」イメージです。</p>
+</section>
+
+<section class="lesson" id="find">
+  <h2>4. <code>find()</code></h2>
+  <div class="callout"><code>find()</code>＝検索スタートボタン</div>
+<pre data-lang="php"><code>$query = $this->Todos->find();
+// まだ「条件付きの検索計画」。ここでDBは確定していないことも多い</code></pre>
+</section>
+
+<section class="lesson" id="all">
+  <h2>5. <code>all()</code></h2>
+  <div class="callout"><code>all()</code>＝ヒットしたものを全部（一覧として）取る</div>
+<pre data-lang="php"><code>$todos = $this->Todos->find()->all();</code></pre>
+</section>
+
+<section class="lesson" id="first">
+  <h2>6. <code>first()</code></h2>
+  <div class="callout"><code>first()</code>＝先頭の1件だけ。無ければ null</div>
+<pre data-lang="php"><code>$todo = $this->Todos->find()->first();</code></pre>
+</section>
+
+<section class="lesson" id="where">
+  <h2>7. <code>where()</code> による検索条件</h2>
+  <p>「未完了だけ」など、絞り込みです。</p>
+<pre data-lang="php"><code>$todos = $this->Todos->find()
+    ->where(['done' => false])
+    ->all();</code></pre>
+  <div class="tip">
+    <span class="tip-label">読み方</span>
+    <p><code>where(['done' =&gt; false])</code>＝「done が false のもの」。</p>
+  </div>
+</section>
+
+<section class="lesson" id="and-or">
+  <h2>8. AND / OR条件</h2>
+  <ul>
+    <li>条件を並べる → AND（どれも満たす）</li>
+    <li><code>OR</code> キー → どれか満たせばOK</li>
+  </ul>
+<pre data-lang="php"><code>->where([
+    'user_id' => 1,
+    'done' => false,  // どちらも必要 = AND
+])
+
+->where([
+    'OR' => [
+        ['title LIKE' => '%請求%'],
+        ['title LIKE' => '%支払%'],
+    ]
+])</code></pre>
+</section>
+
+<section class="lesson" id="order">
+  <h2>9. 並び替え</h2>
+<pre data-lang="php"><code>->orderBy(['created' => 'DESC'])  // 新しい順
+// DESC=大きい→小さい、ASC=小さい→大きい</code></pre>
+</section>
+
+<section class="lesson" id="one">
+  <h2>10. データ1件取得</h2>
+<pre data-lang="php"><code>$todo = $this->Todos->get($id);
+// ID指定で1件。無いとエラー（例外）になる</code></pre>
+  <div class="warn">
+    <span class="warn-label">first との違い</span>
+    <p><code>get</code> は「必ずあるはず」のとき。<code>first</code> は「無いかも」のときに向きます。</p>
+  </div>
+</section>
+
+<section class="lesson" id="list">
+  <h2>11. データ一覧取得</h2>
+<pre data-lang="php"><code>$todos = $this->Todos->find()
+    ->where(['user_id' => $userId])
+    ->orderBy(['id' => 'DESC'])
+    ->all();
+$this->set(compact('todos'));
+// compact は ['todos' => $todos] の短縮</code></pre>
+</section>
+
+<section class="lesson" id="sql">
+  <h2>12. SQLがどう組み立てられるのか</h2>
+  <p>あなたが書いた find は、最終的にデータベース言葉（SQL）になります。</p>
+<pre data-lang="sql"><code>SELECT * FROM todos WHERE done = 0</code></pre>
+  <div class="tip">
+    <span class="tip-label">実務の癖</span>
+    <p>「思ったデータが来ない」ときは、画面より先にSQLを疑うと早いです。</p>
+  </div>
+</section>
+
+<section class="lesson" id="exercise">
+  <h2>第5章 やってみよう</h2>
+  <div class="exercise">
+    <div class="exercise-label">EXERCISE</div>
+    <ol>
+      <li>未完了だけ取る where を書く</li>
+      <li>新しい順に並べる</li>
+      <li>get と first の違いを自分の言葉で1行ずつ書く</li>
+    </ol>
+  </div>
+</section>
+        <nav class="pager"><a href="ch04.html"><span class="dir">前へ</span><span class="title">第4章 View・画面表示</span></a><a class="next" href="ch06.html"><span class="dir">次へ</span><span class="title">第6章 CRUD</span></a></nav>
+      </div>
+    </main>
+  </div>
+  <script src="../js/site.js"></script>
+  <script src="../js/curriculum.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

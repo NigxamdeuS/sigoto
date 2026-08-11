@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第2章 CakePHPとMVC — CakePHP 0から実務まで</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body data-chapter="02">
+  <div id="site-nav" class="site-nav" aria-label="サイトナビ"></div>
+  <div class="app">
+    <aside class="sidebar" aria-label="目次">
+      <a class="brand" href="../index.html">
+        <div class="brand-title">CakePHP 0から実務まで</div>
+        <div class="brand-sub">たまたまに · 初心者向け全14章</div>
+      </a>
+      <nav id="sidebar-nav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <main class="main">
+      <div class="topbar">
+        <button type="button" class="menu-btn" id="menu-btn" aria-label="メニュー">メニュー</button>
+        <span>第2章</span>
+      </div>
+      <div class="content">
+        <header class="chapter-head">
+          <div class="eyebrow">第2章 · 初心者向け</div>
+          <h1>CakePHPとMVC</h1>
+          <p class="lead">CakePHPは「役割分担の決まった型」です。全体像だけ先に掴みます。</p>
+        </header>
+        
+<section class="lesson" id="what-is-cake">
+  <h2>1. CakePHPとは</h2>
+  <div class="callout"><code>CakePHP</code>＝PHPでWebアプリを速く・きれいに作るための道具一式</div>
+  <p>ログイン、画面表示、データベースアクセスなど、毎回ゼロから書かなくてよい仕組みが最初から入っています。</p>
+  <div class="analogy">
+    <span class="analogy-label">たとえ</span>
+    <p>素のPHPが「包丁だけ」、CakePHPが「キッチン一式のキッチンカー」です。ルール（置き場所）がある代わりに、迷いにくくなります。</p>
+  </div>
+</section>
+
+<section class="lesson" id="mvc">
+  <h2>2. MVCとは</h2>
+  <div class="callout"><code>MVC</code>＝仕事を3つに分ける考え方</div>
+  <ul>
+    <li><strong>Model</strong>（モデル）… データ係。DBの読み書き</li>
+    <li><strong>View</strong>（ビュー）… 見た目係。HTMLを作る</li>
+    <li><strong>Controller</strong>（コントローラ）… 受付係。流れを決める</li>
+  </ul>
+  <div class="analogy">
+    <span class="analogy-label">レストランのたとえ</span>
+    <p>お客さん＝ブラウザ。受付＝Controller。厨房＝Model。盛り付け・提供＝View。</p>
+  </div>
+</section>
+
+<section class="lesson" id="roles">
+  <h2>3. Model / View / Controllerの役割</h2>
+  <div class="tip">
+    <span class="tip-label">役割の見分け方</span>
+    <ul>
+      <li>DBを触る？ → Model</li>
+      <li>HTMLを書く？ → View</li>
+      <li>「POSTが来たら保存して一覧へ戻す」など判断？ → Controller</li>
+    </ul>
+  </div>
+  <div class="warn">
+    <span class="warn-label">よくある失敗</span>
+    <p>全部をControllerに書くと、後で読めなくなります。まずは「受付は短く」を意識しましょう。</p>
+  </div>
+</section>
+
+<section class="lesson" id="folders">
+  <h2>4. CakePHPのフォルダ構成</h2>
+  <p>最初に覚える場所はこれだけで十分です。</p>
+<pre data-lang="text" data-label="PATH"><code>src/Controller/   … 受付（Controller）
+src/Model/Table/  … DB操作（Table）
+src/Model/Entity/ … データ1件分
+templates/        … 画面のHTML
+config/routes.php … URLの対応表</code></pre>
+  <div class="note-box">
+    <span class="note-label">バージョンについて</span>
+    <p>CakePHP 3/4/5でフォルダ名が少し違います。意味は同じなので、「Controller・Model・画面ファイルがある」と捉えればOKです。</p>
+  </div>
+</section>
+
+<section class="lesson" id="request-flow">
+  <h2>5. URLから画面が表示されるまで</h2>
+  <div class="callout">ブラウザ → URL解釈 → Controller →（必要ならModel）→ View → 画面</div>
+  <ol>
+    <li>住所（URL）にアクセスする</li>
+    <li>Routingが「どの受付の、どの係か」を決める</li>
+    <li>Controllerのメソッド（Action）が動く</li>
+    <li>データを View に渡し、HTMLが返る</li>
+  </ol>
+</section>
+
+<section class="lesson" id="routing">
+  <h2>6. Routingとは</h2>
+  <div class="callout"><code>Routing</code>＝URLと処理の対応表</div>
+  <p>たとえば <code>/todos</code> を開いたら <code>TodosController</code> の <code>index</code> を動かす、と決めます。</p>
+<pre data-lang="php" data-label="イメージ"><code>// /todos  →  TodosController::index()</code></pre>
+  <div class="tip">
+    <span class="tip-label">慣例</span>
+    <p>何も書かなくても <code>/コントローラ名/アクション名</code> で動くことが多いです。まずはこの形を覚えましょう。</p>
+  </div>
+</section>
+
+<section class="lesson" id="controller-action">
+  <h2>7. ControllerとAction</h2>
+  <div class="callout"><code>Controller</code>＝受付クラス　／　<code>Action</code>＝その中の1つの窓口（メソッド）</div>
+<pre data-lang="php"><code>class TodosController extends AppController
+{
+    public function index()
+    {
+        // 一覧ページ用の窓口
+    }
+}</code></pre>
+  <p><code>index</code> がActionです。URLの最後の部分と名前が対応することが多いです。</p>
+</section>
+
+<section class="lesson" id="reading-code">
+  <h2>8. CakePHPコードの基本的な読み方</h2>
+  <div class="tip">
+    <span class="tip-label">迷ったらこの3問</span>
+    <ol>
+      <li>このURLはどの Action？</li>
+      <li>データはどこで取っている？</li>
+      <li>どの画面ファイルを出している？</li>
+    </ol>
+  </div>
+  <div class="callout">Action名と、templates 内のファイル名がだいたい一致する</div>
+</section>
+
+<section class="lesson" id="exercise">
+  <h2>第2章 やってみよう</h2>
+  <div class="exercise">
+    <div class="exercise-label">EXERCISE</div>
+    <ol>
+      <li>自分のプロジェクトで Controller フォルダを開いてみる</li>
+      <li>既存のURLを1つ選び、「Controller名 / Action名」を書き出す</li>
+      <li>MVCを、レストランのたとえで家族に説明してみる</li>
+    </ol>
+  </div>
+</section>
+        <nav class="pager"><a href="ch01.html"><span class="dir">前へ</span><span class="title">第1章 PHP・オブジェクト指向の基礎</span></a><a class="next" href="ch03.html"><span class="dir">次へ</span><span class="title">第3章 Controllerの基本</span></a></nav>
+      </div>
+    </main>
+  </div>
+  <script src="../js/site.js"></script>
+  <script src="../js/curriculum.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

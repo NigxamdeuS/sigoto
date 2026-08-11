@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第10章 Transaction — CakePHP 0から実務まで</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body data-chapter="10">
+  <div id="site-nav" class="site-nav" aria-label="サイトナビ"></div>
+  <div class="app">
+    <aside class="sidebar" aria-label="目次">
+      <a class="brand" href="../index.html">
+        <div class="brand-title">CakePHP 0から実務まで</div>
+        <div class="brand-sub">たまたまに · 初心者向け全14章</div>
+      </a>
+      <nav id="sidebar-nav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <main class="main">
+      <div class="topbar">
+        <button type="button" class="menu-btn" id="menu-btn" aria-label="メニュー">メニュー</button>
+        <span>第10章</span>
+      </div>
+      <div class="content">
+        <header class="chapter-head">
+          <div class="eyebrow">第10章 · 初心者向け</div>
+          <h1>Transaction</h1>
+          <p class="lead">複数の保存を「全部成功」か「全部なかったこと」にまとめる仕組みです。</p>
+        </header>
+        
+<section class="lesson" id="what-is-tx">
+  <h2>1. Transactionとは</h2>
+  <div class="callout">複数のDB操作を、1セットとして扱うこと</div>
+</section>
+
+<section class="lesson" id="why">
+  <h2>2. なぜ必要なのか</h2>
+  <div class="analogy">
+    <span class="analogy-label">たとえ</span>
+    <p>口座Aから下ろして口座Bに入れる途中で失敗したら、片方だけ減っては困ります。両方まとめて確定／取消が必要です。</p>
+  </div>
+</section>
+
+<section class="lesson" id="begin">
+  <h2>3. BEGIN / COMMIT / ROLLBACK</h2>
+  <ul>
+    <li><code>BEGIN</code> … セット開始</li>
+    <li><code>COMMIT</code> … 全部OKなので確定</li>
+    <li><code>ROLLBACK</code> … 失敗したので取り消し</li>
+  </ul>
+</section>
+
+<section class="lesson" id="cake">
+  <h2>4. CakePHPでTransactionを使う</h2>
+  <p>おすすめは「任せきり」の書き方です。</p>
+<pre data-lang="php"><code>$connection = $this->Todos->getConnection();
+$connection->transactional(function () {
+    // ここで複数 save
+    // 例外が出たら自動で rollback
+    return true;
+});</code></pre>
+</section>
+
+<section class="lesson" id="multi">
+  <h2>5. 複数のDB更新</h2>
+<pre data-lang="php"><code>$connection->transactional(function () use ($order, $items) {
+    $this->Orders->saveOrFail($order);
+    foreach ($items as $item) {
+        $this->OrderItems->saveOrFail($item);
+    }
+    return true;
+});</code></pre>
+  <p><code>saveOrFail</code> は失敗時に例外を出すので、Transactionと相性がよいです。</p>
+</section>
+
+<section class="lesson" id="fail">
+  <h2>6. 途中で失敗した場合</h2>
+  <div class="callout">1つでも失敗 → 全部なかったことになる（ROLLBACK）</div>
+</section>
+
+<section class="lesson" id="exception">
+  <h2>7. 例外処理との組み合わせ</h2>
+<pre data-lang="php"><code>try {
+    $connection->transactional(function () use ($todo, $log) {
+        $this->Todos->saveOrFail($todo);
+        $this->Logs->saveOrFail($log);
+        return true;
+    });
+    $this->Flash->success('完了');
+} catch (\Throwable $e) {
+    $this->Flash->error('処理に失敗しました');
+}</code></pre>
+</section>
+
+<section class="lesson" id="exercise">
+  <h2>第10章 やってみよう</h2>
+  <div class="exercise">
+    <div class="exercise-label">EXERCISE</div>
+    <ol>
+      <li>「TODO保存＋ログ保存」を1セットにすると書く</li>
+      <li>2つ目が失敗したら1つ目も消える理由を説明する</li>
+    </ol>
+  </div>
+</section>
+        <nav class="pager"><a href="ch09.html"><span class="dir">前へ</span><span class="title">第9章 Pagination</span></a><a class="next" href="ch11.html"><span class="dir">次へ</span><span class="title">第11章 ログイン・権限制御</span></a></nav>
+      </div>
+    </main>
+  </div>
+  <script src="../js/site.js"></script>
+  <script src="../js/curriculum.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>第14章 TODO機能を一から作る — CakePHP 0から実務まで</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body data-chapter="14">
+  <div id="site-nav" class="site-nav" aria-label="サイトナビ"></div>
+  <div class="app">
+    <aside class="sidebar" aria-label="目次">
+      <a class="brand" href="../index.html">
+        <div class="brand-title">CakePHP 0から実務まで</div>
+        <div class="brand-sub">たまたまに · 初心者向け全14章</div>
+      </a>
+      <nav id="sidebar-nav"></nav>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <main class="main">
+      <div class="topbar">
+        <button type="button" class="menu-btn" id="menu-btn" aria-label="メニュー">メニュー</button>
+        <span>第14章</span>
+      </div>
+      <div class="content">
+        <header class="chapter-head">
+          <div class="eyebrow">第14章 · 初心者向け</div>
+          <h1>TODO機能を一から作る</h1>
+          <p class="lead">今までの部品を、1つのTODOアプリに組み立てます。完成イメージを持って進みましょう。</p>
+        </header>
+        
+<section class="lesson" id="table">
+  <h2>1. TODOテーブルを理解</h2>
+  <div class="callout">最低限の列: id / user_id / title / done / created / modified</div>
+<pre data-lang="sql"><code>CREATE TABLE todos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  title VARCHAR(100) NOT NULL,
+  done TINYINT(1) NOT NULL DEFAULT 0,
+  created DATETIME,
+  modified DATETIME
+);</code></pre>
+  <div class="tip">
+    <span class="tip-label">意味</span>
+    <p><code>user_id</code>＝誰のTODOか。<code>done</code>＝終わったか（0/1）。</p>
+  </div>
+</section>
+
+<section class="lesson" id="index">
+  <h2>2. TODO一覧取得</h2>
+  <p>ログイン中ユーザーの分だけ、新しい順でページングします。</p>
+<pre data-lang="php"><code>public function index()
+{
+    $userId = $this->request->getSession()->read('Auth.User.id');
+    $query = $this->Todos->find()
+        ->where(['user_id' => $userId])
+        ->orderBy(['id' => 'DESC']);
+    $todos = $this->paginate($query);
+    $this->set(compact('todos'));
+}</code></pre>
+</section>
+
+<section class="lesson" id="view">
+  <h2>3. TODO詳細</h2>
+<pre data-lang="php"><code>public function view($id = null)
+{
+    $todo = $this->Todos->get($id);
+    $this->assertOwned($todo); // 自分のものか確認
+    $this->set(compact('todo'));
+}</code></pre>
+</section>
+
+<section class="lesson" id="add">
+  <h2>4. TODO登録</h2>
+  <div class="warn">
+    <span class="warn-label">忘れやすい点</span>
+    <p>フォームに無くても、<code>user_id</code> はサーバー側で必ずセットします（改ざん防止）。</p>
+  </div>
+<pre data-lang="php"><code>$data = $this->request->getData();
+$data['user_id'] = $this->request->getSession()->read('Auth.User.id');
+$todo = $this->Todos->patchEntity($todo, $data);</code></pre>
+</section>
+
+<section class="lesson" id="edit">
+  <h2>5. TODO編集</h2>
+  <p>get → 権限チェック → patch → save、の流れです（第6章＋第11章）。</p>
+</section>
+
+<section class="lesson" id="delete">
+  <h2>6. TODO削除</h2>
+  <p>POSTのみ許可 → get → 権限チェック → delete → 一覧へ。</p>
+</section>
+
+<section class="lesson" id="search">
+  <h2>7. 検索</h2>
+<pre data-lang="php"><code>$q = $this->request->getQuery('q');
+if ($q) {
+    $query->where(['title LIKE' => '%' . $q . '%']);
+}</code></pre>
+</section>
+
+<section class="lesson" id="pagination">
+  <h2>8. Pagination</h2>
+<pre data-lang="php"><code>public array $paginate = [
+    'limit' => 10,
+    'order' => ['Todos.id' => 'desc'],
+];</code></pre>
+</section>
+
+<section class="lesson" id="user-link">
+  <h2>9. ログインユーザーとの紐付け</h2>
+  <div class="callout">登録時に user_id を付ける / 一覧は自分のIDで絞る</div>
+</section>
+
+<section class="lesson" id="auth">
+  <h2>10. 権限チェック</h2>
+<pre data-lang="php"><code>private function assertOwned($todo): void
+{
+    $userId = $this->request->getSession()->read('Auth.User.id');
+    $role = $this->request->getSession()->read('Auth.User.role');
+    if ($todo->user_id !== $userId && $role !== 'admin') {
+        throw new \Cake\Http\Exception\ForbiddenException();
+    }
+}</code></pre>
+</section>
+
+<section class="lesson" id="transaction">
+  <h2>11. Transaction</h2>
+  <p>「TODO保存＋操作ログ」などを1セットにするとき（第10章）に使います。</p>
+</section>
+
+<section class="lesson" id="error">
+  <h2>12. エラー処理</h2>
+  <p>失敗したら Flash（短い）＋ Log（詳しい）。</p>
+</section>
+
+<section class="lesson" id="csv">
+  <h2>13. CSV出力</h2>
+  <p>自分のTODOだけ export（第13章）すれば完成です。</p>
+  <div class="callout">ここまで動けば「業務CRUD」の最低ラインはクリアです</div>
+  <div class="exercise">
+    <div class="exercise-label">FINAL</div>
+    <h3>完成チェック（はい/いいえ）</h3>
+    <ol>
+      <li>未ログインで一覧に入れない</li>
+      <li>他人のTODOをURL直打ちしても編集できない</li>
+      <li>検索とページングが動く</li>
+      <li>登録・更新・削除ができる</li>
+      <li>CSVがダウンロードできる</li>
+      <li>失敗時にログが残る</li>
+    </ol>
+  </div>
+</section>
+        <nav class="pager"><a href="ch13.html"><span class="dir">前へ</span><span class="title">第13章 CSV出力</span></a><a class="next" href="../index.html"><span class="dir">次へ</span><span class="title">学習目次へ戻る</span></a></nav>
+      </div>
+    </main>
+  </div>
+  <script src="../js/site.js"></script>
+  <script src="../js/curriculum.js"></script>
+  <script src="../js/app.js"></script>
+</body>
+</html>
