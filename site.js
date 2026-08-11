@@ -33,7 +33,8 @@ window.SITE.resolveBase = function () {
   if (conf.autoLocalBase && local) return './';
 
   if (host === 'nigxam.com' || host === 'www.nigxam.com') {
-    return '/cakephp/';
+    // 本番はドメイン直下に配置されている
+    return '/';
   }
 
   if (host.endsWith('github.io')) {
