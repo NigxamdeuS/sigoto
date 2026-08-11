@@ -107,61 +107,13 @@
   }
 
   function siteBase() {
-    return window.SITE && typeof window.SITE.resolveBase === 'function'
-      ? window.SITE.resolveBase()
-      : './';
-  }
-
-  function renderSiteNav() {
-    const mount = document.getElementById('site-nav');
-    if (!mount || !window.SITE) return;
-
-    const nig = window.SITE.nigxam;
-    const course = window.SITE.course;
-    const base = siteBase();
-    const homeHref = base + 'index.html';
-
-    let links = nig.nav
-      .map(function (item) {
-        return (
-          '<a class="site-nav-link" href="' +
-          escapeHtml(item.href) +
-          '" rel="noopener">' +
-          escapeHtml(item.label) +
-          '</a>'
-        );
-      })
-      .join('');
-
-    links +=
-      '<a class="site-nav-link current" href="' +
-      escapeHtml(homeHref) +
-      '">' +
-      escapeHtml(course.short) +
-      '</a>';
-
-    mount.innerHTML =
-      '<div class="site-nav-inner">' +
-      '<a class="site-nav-brand" href="' +
-      escapeHtml(nig.home) +
-      '" rel="noopener">' +
-      escapeHtml(nig.name) +
-      '</a>' +
-      '<nav class="site-nav-links" aria-label="たまたまに サイトナビ">' +
-      links +
-      '</nav>' +
-      '</div>';
-  }
-
-  function paintBrand() {
-    const brand = document.querySelector('.brand');
-    if (!brand || !window.SITE) return;
-    const base = siteBase();
-    brand.setAttribute('href', base + 'index.html');
-    const title = brand.querySelector('.brand-title');
-    const sub = brand.querySelector('.brand-sub');
-    if (title) title.textContent = window.SITE.course.title;
-    if (sub) sub.textContent = window.SITE.course.subtitle;
+    const host = location.hostname;
+    if (host === 'localhost' || host === '127.0.0.1' || location.protocol === 'file:') {
+      return './';
+    }
+    if (host.endsWith('github.io')) return '/sigoto/';
+    if (host === 'nigxam.com' || host === 'www.nigxam.com') return '/';
+    return './';
   }
 
   function renderSidebar(currentId) {
@@ -309,9 +261,6 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     const chapterId = document.body.dataset.chapter || null;
-    document.body.classList.add('has-site-nav');
-    renderSiteNav();
-    paintBrand();
     renderSidebar(chapterId);
     renderHomeToc();
     fixPagerLinks();
