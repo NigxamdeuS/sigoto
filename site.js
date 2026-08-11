@@ -2,7 +2,6 @@
  * nigxam.com / GitHub Pages 連携設定
  */
 window.SITE = {
-  // 既定（GitHub Pages: /sigoto/）
   basePath: '/sigoto/',
   autoLocalBase: true,
 
@@ -31,12 +30,7 @@ window.SITE.resolveBase = function () {
   const host = location.hostname;
   const local = host === 'localhost' || host === '127.0.0.1' || location.protocol === 'file:';
 
-  if (conf.autoLocalBase && local) {
-    const inChapters =
-      /\/chapters\//.test(location.pathname) ||
-      /chapters[\\/][^/]+\.html$/.test(location.pathname);
-    return inChapters ? '../' : './';
-  }
+  if (conf.autoLocalBase && local) return './';
 
   if (host === 'nigxam.com' || host === 'www.nigxam.com') {
     return '/cakephp/';

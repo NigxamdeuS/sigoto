@@ -168,7 +168,7 @@
     const mount = document.getElementById('sidebar-nav');
     if (!mount || !window.CURRICULUM) return;
 
-    const base = siteBase() + 'chapters/';
+    const base = siteBase();
     let html = '';
 
     window.CURRICULUM.forEach(function (ch) {
@@ -266,7 +266,7 @@
     const mount = document.getElementById('home-toc');
     if (!mount || !window.CURRICULUM) return;
 
-    const base = siteBase() + 'chapters/';
+    const base = siteBase();
     mount.innerHTML = window.CURRICULUM.map(function (ch) {
       return (
         '<a class="toc-card" href="' +
@@ -302,7 +302,7 @@
         return;
       }
       if (/^ch\d+\.html/.test(href)) {
-        a.setAttribute('href', base + 'chapters/' + href);
+        a.setAttribute('href', base + href);
       }
     });
   }
